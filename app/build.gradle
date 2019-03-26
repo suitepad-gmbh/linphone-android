@@ -1,0 +1,132 @@
+// Project information
+buildDir = 'bin'
+
+def getPackageName() {
+    return "de.suitepad.linbridge"
+}
+
+buildscript {
+    ext.kotlin_version = '1.3.21'
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+}
+
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+
+dependencies {
+    implementation project(':liblinphone-sdk')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+// Dagger dependencies
+dependencies {
+    implementation 'com.google.dagger:dagger-android:2.21'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
+    kapt 'com.google.dagger:dagger-compiler:2.15'
+}
+
+def excludeFiles = []
+excludeFiles.add('**/Firebase*')
+
+def excludePackage = []
+
+excludePackage.add('**/gdb.*')
+excludePackage.add('**/libopenh264**')
+excludePackage.add('**/**tester**')
+excludePackage.add('**/LICENSE.txt')
+
+android {
+
+
+    buildTypes {
+        release {}
+        debug {}
+    }
+
+    defaultConfig {
+        compileSdkVersion 28
+        buildToolsVersion "28.0.0"
+        applicationId getPackageName()
+        multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    // Signing
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+        packaged {
+            initWith release
+            signingConfig null
+            //matchingFallbacks = ['debug', 'release']
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            def srcDirs = ['src/android']
+            java.srcDirs = srcDirs
+            resources.srcDirs = srcDirs
+            aidl.srcDirs = srcDirs
+            renderscript.srcDirs = srcDirs
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            java.excludes = excludeFiles
+
+            // Exclude some useless files
+            packagingOptions {
+                excludes = excludePackage
+            }
+        }
+
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+    packagingOptions {
+        pickFirst 'META-INF/NOTICE'
+        pickFirst 'META-INF/LICENSE'
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+
