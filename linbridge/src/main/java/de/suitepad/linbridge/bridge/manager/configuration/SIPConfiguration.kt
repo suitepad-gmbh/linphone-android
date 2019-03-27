@@ -48,18 +48,12 @@ class SIPConfiguration {
     /**
      * amount of micGain/speakerGain above which [echoLimiter] is automatically disabled
      */
-    var doubleTalkDetection: Int = 0
+    var doubleTalkDetection: Float = 0F
 
     /**
-     * list of enabled [Codec]s, [disabledCodecs] overwrites this
+     * list of enabled [Codec]s,
      * empty list or null for enabling all codecs
      */
-    var enabledCodecs: List<Codec> = listOf()
-
-    /**
-     * list of disabled [Codec]s
-     * empty list or null will not disable any codec
-     */
-    var disabledCodecs: List<Codec> = listOf()
+    var enabledCodecs: List<Codec>? = null
 
 }
