@@ -54,6 +54,6 @@ class SIPConfiguration {
      * list of enabled [Codec]s,
      * empty list or null for enabling all codecs
      */
-    var enabledCodecs: List<Codec>? = null
+    var enabledCodecs: List<String>? = null
 
 }
