@@ -11,16 +11,9 @@ import de.suitepad.linbridge.bridge.dep.DaggerBridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.ManagerModule
 import de.suitepad.linbridge.bridge.exception.MissingParameterException
 import de.suitepad.linbridge.bridge.manager.IManager
-import de.suitepad.linbridge.bridge.manager.configuration.Codec
 import de.suitepad.linbridge.bridge.manager.configuration.SIPConfiguration
 import timber.log.Timber
 import javax.inject.Inject
-
-const val MESSAGE_BIND = 1
-const val MESSAGE_AUTHENTICATE = 2
-const val MESSAGE_CONFIGURE = 3
-const val MESSAGE_CALL = 4
-const val MESSAGE_END_CALL = 5
 
 const val ACTION_START_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_START_SERVICE"
 const val ACTION_STOP_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_STOP_SERVICE"
@@ -31,22 +24,25 @@ const val EXTRA_SIP_PASSWORD = "EXTRA_SIP_PASSWORD"
 const val EXTRA_SIP_PORT = "EXTRA_SIP_PASSWORD"
 const val EXTRA_SIP_PROXY = "EXTRA_SIP_PROXY"
 
-const val EXTRA_MICROPHONE_GAIN         = "EXTRA_MICROPHONE_GAIN"
-const val EXTRA_SPEAKER_GAIN            = "EXTRA_SPEAKER_GAIN"
-const val EXTRA_AEC_ENABLED             = "EXTRA_AEC_ENABLED"
-const val EXTRA_EL_ENABLED              = "EXTRA_EL_ENABLED"
-const val EXTRA_EL_MIC_REDUCTION        = "EXTRA_EL_MICROPHONE_REDUCTION"
-const val EXTRA_EL_SPEAKER_THRESHOLD    = "EXTRA_EL_SPEAKER_THRESHOLD"
-const val EXTRA_EL_SUSTAIN              = "EXTRA_EL_SUSTAIN"
+const val EXTRA_MICROPHONE_GAIN = "EXTRA_MICROPHONE_GAIN"
+const val EXTRA_SPEAKER_GAIN = "EXTRA_SPEAKER_GAIN"
+const val EXTRA_AEC_ENABLED = "EXTRA_AEC_ENABLED"
+const val EXTRA_EL_ENABLED = "EXTRA_EL_ENABLED"
+const val EXTRA_EL_MIC_REDUCTION = "EXTRA_EL_MICROPHONE_REDUCTION"
+const val EXTRA_EL_SPEAKER_THRESHOLD = "EXTRA_EL_SPEAKER_THRESHOLD"
+const val EXTRA_EL_SUSTAIN = "EXTRA_EL_SUSTAIN"
 const val EXTRA_EL_DOUBLETALK_THRESHOLD = "EXTRA_EL_DOUBLETALK_THRESHOLD"
-const val EXTRA_LIST_CODEC_ENABLED      = "EXTRA_LIST_CODEC_ENABLED"
+const val EXTRA_LIST_CODEC_ENABLED = "EXTRA_LIST_CODEC_ENABLED"
 
-class BridgeService : Service() {
+class BridgeService : Service(), IBridgeService {
 
     lateinit var component: BridgeServiceComponent
 
     @Inject
     lateinit var linphoneManager: IManager
+
+    var messengerHandler: Messenger? = null
+    var callbackMessenger: Messenger? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -81,12 +77,12 @@ class BridgeService : Service() {
         return result
     }
 
-    fun authenticate(bundle: Bundle) {
-        val sipServer = bundle.getString(EXTRA_SIP_SERVER)
-        val sipUsername = bundle.getString(EXTRA_SIP_USERNAME)
-        val sipPassword = bundle.getString(EXTRA_SIP_PASSWORD)
-        val sipPort = bundle.getInt(EXTRA_SIP_PORT, 5060)
-        val sipProxy = bundle.getString(EXTRA_SIP_PROXY)
+    override fun authenticate(payload: Bundle) {
+        val sipServer = payload.getString(EXTRA_SIP_SERVER)
+        val sipUsername = payload.getString(EXTRA_SIP_USERNAME)
+        val sipPassword = payload.getString(EXTRA_SIP_PASSWORD)
+        val sipPort = payload.getInt(EXTRA_SIP_PORT)
+        val sipProxy = payload.getString(EXTRA_SIP_PROXY)
 
         if (sipServer == null) {
             throw MissingParameterException(EXTRA_SIP_SERVER)
@@ -103,6 +99,20 @@ class BridgeService : Service() {
         linphoneManager.authenticate(sipServer, sipPort, sipUsername, sipPassword, sipProxy)
     }
 
+    override fun configure(payload: Bundle) {
+        linphoneManager.configure(SIPConfiguration().apply {
+            microphoneGain = payload.getInt(EXTRA_MICROPHONE_GAIN)
+            speakerGain = payload.getInt(EXTRA_SPEAKER_GAIN)
+            echoCancellation = payload.getBoolean(EXTRA_AEC_ENABLED)
+            echoLimiter = payload.getBoolean(EXTRA_EL_ENABLED)
+            microphoneDecrease = payload.getInt(EXTRA_EL_MIC_REDUCTION)
+            speakerThreshold = payload.getFloat(EXTRA_EL_SPEAKER_THRESHOLD)
+            doubleTalkDetection = payload.getFloat(EXTRA_EL_DOUBLETALK_THRESHOLD)
+            echoLimiterSustain = payload.getInt(EXTRA_EL_SUSTAIN)
+            enabledCodecs = payload.getStringArray(EXTRA_LIST_CODEC_ENABLED)?.toList()
+        })
+    }
+
     fun startService() {
         linphoneManager.start()
     }
@@ -112,32 +122,18 @@ class BridgeService : Service() {
         stopSelf()
     }
 
-    fun configure(bundle: Bundle) {
-        SIPConfiguration().apply {
-            microphoneGain = bundle.getInt(EXTRA_MICROPHONE_GAIN)
-            speakerGain = bundle.getInt(EXTRA_SPEAKER_GAIN)
-            echoCancellation = bundle.getBoolean(EXTRA_AEC_ENABLED)
-            echoLimiter = bundle.getBoolean(EXTRA_EL_ENABLED)
-            microphoneDecrease = bundle.getInt(EXTRA_EL_MIC_REDUCTION)
-            speakerThreshold =  bundle.getFloat(EXTRA_EL_SPEAKER_THRESHOLD)
-            doubleTalkDetection = bundle.getFloat(EXTRA_EL_DOUBLETALK_THRESHOLD)
-            echoLimiterSustain = bundle.getInt(EXTRA_EL_SUSTAIN)
-            enabledCodecs = bundle.getStringArray(EXTRA_LIST_CODEC_ENABLED)?.mapNotNull {
-                try {
-                    Codec.valueOf(it)
-                } catch (ex: IllegalArgumentException) {
-                    null
-                }
-            }
+    override fun registerCallback(callback: Messenger) {
+        if (callbackMessenger != null) {
+            TODO("handle this case and throw an error")
         }
-    }
-
-    fun registerCallback() {
-
+        callbackMessenger = callback
     }
 
     override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
+        if (messengerHandler == null) {
+            messengerHandler = Messenger(MessengerHandler(this))
+        }
+        return messengerHandler!!.binder
     }
 
 }
