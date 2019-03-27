@@ -1,5 +1,6 @@
 package de.suitepad.linbridge.bridge.manager
 
+import de.suitepad.linbridge.bridge.manager.configuration.SIPConfiguration
 import org.linphone.core.Core
 
 class LinphoneManager(val core: Core): IManager {

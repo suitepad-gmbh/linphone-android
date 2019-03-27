@@ -1,4 +1,4 @@
-package de.suitepad.linbridge.bridge.manager
+package de.suitepad.linbridge.bridge.manager.configuration
 
 /**
  * Configuration class for the SIP client
@@ -26,7 +26,7 @@ class SIPConfiguration {
      * output exceeds a certain [speakerThreshold] amount. The microphone gain is then decreased for
      * [echoLimiterSustain]ms
      *
-     * echo limiter will be bypassed in case of double talk detection
+     * echo limiter will be bypassed in case of double talk detection, [doubleTalkDetection]
      */
     var echoLimiter: Boolean = false
 
@@ -43,6 +43,23 @@ class SIPConfiguration {
     /**
      * microphone gain decrease sustain when [echoLimiter] is active
      */
-    val echoLimiterSustain: Int = 0
+    var echoLimiterSustain: Int = 0
+
+    /**
+     * amount of micGain/speakerGain above which [echoLimiter] is automatically disabled
+     */
+    var doubleTalkDetection: Int = 0
+
+    /**
+     * list of enabled [Codec]s, [disabledCodecs] overwrites this
+     * empty list or null for enabling all codecs
+     */
+    var enabledCodecs: List<Codec> = listOf()
+
+    /**
+     * list of disabled [Codec]s
+     * empty list or null will not disable any codec
+     */
+    var disabledCodecs: List<Codec> = listOf()
 
 }
