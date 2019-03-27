@@ -4,14 +4,15 @@ import android.content.Context
 import dagger.Component
 import de.suitepad.linbridge.app.dep.AppComponent
 import de.suitepad.linbridge.bridge.BridgeService
+import de.suitepad.linbridge.bridge.manager.IManager
 import de.suitepad.linbridge.bridge.manager.LinphoneManager
 import javax.inject.Scope
 
-@Component(dependencies = [AppComponent::class], modules = [BridgeModule::class])
+@Component(dependencies = [AppComponent::class], modules = [BridgeModule::class, ManagerModule::class])
 @BridgeServiceComponent.LinphoneBridgeServiceScope
 interface BridgeServiceComponent {
 
-    fun provideLinphoneManager(): LinphoneManager
+    fun provideLinphoneManager(): IManager
 
     fun provideServiceContext(): Context
 

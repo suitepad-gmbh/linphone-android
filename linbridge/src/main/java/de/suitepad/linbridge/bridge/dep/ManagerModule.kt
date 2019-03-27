@@ -1,14 +1,21 @@
-package de.suitepad.linbridge.bridge.manager.dep
+package de.suitepad.linbridge.bridge.dep
 
 import android.content.Context
 import dagger.Module
 import dagger.Provides
 import de.suitepad.linbridge.bridge.manager.BridgeLinphoneCoreListener
+import de.suitepad.linbridge.bridge.manager.IManager
+import de.suitepad.linbridge.bridge.manager.LinphoneManager
 import org.linphone.core.*
 import javax.inject.Named
 
-@Module
-class LinphoneManagerModule(val debug: Boolean) {
+@Module(includes = [BridgeModule::class])
+class ManagerModule(val debug: Boolean) {
+
+    @Provides
+    fun linphoneManager(core: Core): IManager {
+        return LinphoneManager(core)
+    }
 
     @Provides
     fun linphoneCore(
@@ -17,8 +24,6 @@ class LinphoneManagerModule(val debug: Boolean) {
             context: Context
     ): Core {
         return factory.createCore(null, null, context).apply {
-            ring = "/toy_mono.wav"
-            setRingback("/ringback.wav")
             addListener(linphoneCoreListener)
         }
     }

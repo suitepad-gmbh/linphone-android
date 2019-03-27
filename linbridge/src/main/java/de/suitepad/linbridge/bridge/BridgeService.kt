@@ -7,7 +7,7 @@ import de.suitepad.linbridge.app.BridgeApplication
 import de.suitepad.linbridge.bridge.dep.BridgeModule
 import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.DaggerBridgeServiceComponent
-import de.suitepad.linbridge.bridge.manager.LinphoneManager
+import de.suitepad.linbridge.bridge.manager.IManager
 import javax.inject.Inject
 
 class BridgeService : Service() {
@@ -29,7 +29,7 @@ class BridgeService : Service() {
     lateinit var component: BridgeServiceComponent
 
     @Inject
-    lateinit var linphoneManager: LinphoneManager
+    lateinit var linphoneManager: IManager
 
     override fun onCreate() {
         super.onCreate()

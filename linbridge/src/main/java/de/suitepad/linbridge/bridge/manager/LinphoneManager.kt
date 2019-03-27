@@ -1,24 +1,19 @@
 package de.suitepad.linbridge.bridge.manager
 
-import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
-import de.suitepad.linbridge.bridge.manager.dep.DaggerLinphoneManagerComponent
-import de.suitepad.linbridge.bridge.manager.dep.LinphoneManagerComponent
-import de.suitepad.linbridge.bridge.manager.dep.LinphoneManagerModule
 import org.linphone.core.Core
-import javax.inject.Inject
 
-class LinphoneManager(bridgeServiceComponent: BridgeServiceComponent) {
+class LinphoneManager(val core: Core): IManager {
 
-    val component: LinphoneManagerComponent = DaggerLinphoneManagerComponent.builder()
-        .bridgeServiceComponent(bridgeServiceComponent)
-        .linphoneManagerModule(LinphoneManagerModule(true))
-        .build()
+    override fun start() {
+    }
 
-    @Inject
-    lateinit var core: Core
+    override fun destroy() {
+    }
 
-    init {
-        component.inject(this)
+    override fun configure(settings: SIPConfiguration) {
+    }
+
+    override fun authenticate(host: String, port: Int, username: String, password: String, proxy: String?) {
     }
 
 }
