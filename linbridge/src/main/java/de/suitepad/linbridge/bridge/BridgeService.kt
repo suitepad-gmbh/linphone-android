@@ -1,8 +1,9 @@
 package de.suitepad.linbridge.bridge
 
+import android.app.Notification
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
+import android.os.*
 import de.suitepad.linbridge.app.BridgeApplication
 import de.suitepad.linbridge.bridge.dep.BridgeModule
 import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
@@ -34,11 +35,15 @@ class BridgeService : Service() {
     override fun onCreate() {
         super.onCreate()
         component = DaggerBridgeServiceComponent.builder()
-            .appComponent(BridgeApplication.getApplication(this).component)
-            .bridgeModule(BridgeModule(this))
-            .build()
+                .appComponent(BridgeApplication.getApplication(this).component)
+                .bridgeModule(BridgeModule(this))
+                .managerModule(ManagerModule(true))
+                .build()
 
         component.inject(this)
+
+        linphoneManager.start()
+        startForeground(1, Notification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
