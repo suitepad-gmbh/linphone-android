@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.Service
 import de.suitepad.linbridge.app.dep.AppComponent
 import de.suitepad.linbridge.app.dep.DaggerAppComponent
+import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 class BridgeApplication : Application() {
@@ -27,6 +28,8 @@ class BridgeApplication : Application() {
         super.onCreate()
 
         component = DaggerAppComponent.builder().build()
+
+        Timber.plant(Timber.DebugTree())
     }
 
 }
