@@ -1,5 +1,5 @@
 package de.suitepad.linbridge.bridge.exception
 
-import java.lang.Exception
+import android.os.RemoteException
 
-class MissingParameterException(parameterName: String): Exception("parameter $parameterName missing")
+class MissingParameterException(parameterName: String): RemoteException("parameter $parameterName missing")

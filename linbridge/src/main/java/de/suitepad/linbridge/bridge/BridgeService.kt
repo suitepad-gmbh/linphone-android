@@ -11,9 +11,9 @@ import de.suitepad.linbridge.bridge.dep.BridgeModule
 import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.DaggerBridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.ManagerModule
-import de.suitepad.linbridge.bridge.exception.MissingParameterException
 import de.suitepad.linbridge.bridge.manager.IManager
 import timber.log.Timber
+import java.lang.NullPointerException
 import javax.inject.Inject
 
 const val ACTION_START_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_START_SERVICE"
@@ -41,6 +41,8 @@ class BridgeService : Service(), IBridgeService {
 
     @Inject
     lateinit var linphoneManager: IManager
+
+    var sipListener: ILinSipListener? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -80,23 +82,49 @@ class BridgeService : Service(), IBridgeService {
     }
 
     override fun authenticate(host: String?, port: Int, username: String?, password: String?, proxy: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (host == null) {
+            throw NullPointerException("host is null")
+        }
+
+        val servicePort = if (port == 0) 5060 else port
+
+        if (username == null) {
+            throw NullPointerException("username is null")
+        }
+
+        if (password == null) {
+            throw NullPointerException("password is null")
+        }
+
+        linphoneManager.authenticate(host, servicePort, username, password, proxy)
     }
 
     override fun updateConfig(configuration: SIPConfiguration?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        linphoneManager.configure(configuration)
     }
 
     override fun getConfig(): SIPConfiguration {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun forceRegisterSipListener(listener: ILinSipListener?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun forceRegisterSipListener(listener: ILinSipListener?) {
+        if (listener == null)
+            throw NullPointerException("passed a null listener")
+
+        sipListener = listener
     }
 
     override fun registerSipListener(listener: ILinSipListener?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (listener == null) {
+            throw NullPointerException("passed a null listener")
+        }
+
+        if (sipListener != null) {
+            return false
+        }
+
+        sipListener = listener
+        return true
     }
 
     override fun stopService() {

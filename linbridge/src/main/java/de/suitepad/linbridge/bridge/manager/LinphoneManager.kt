@@ -11,7 +11,7 @@ class LinphoneManager(val core: Core): IManager {
     override fun destroy() {
     }
 
-    override fun configure(settings: SIPConfiguration) {
+    override fun configure(settings: SIPConfiguration?) {
     }
 
     override fun authenticate(host: String, port: Int, username: String, password: String, proxy: String?) {
