@@ -1,147 +1,91 @@
 package de.suitepad.linbridge.bridge.manager
 
+import de.suitepad.linbridge.api.ILinSipListener
 import org.linphone.core.*
-import java.nio.ByteBuffer
+import timber.log.Timber
 
-class BridgeLinphoneCoreListener: CoreListener {
-    override fun onTransferStateChanged(lc: Core?, transfered: Call?, newCallState: Call.State?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class BridgeLinphoneCoreListener : AudioOnlyCoreListener(), IBridgeLinphoneCoreListener {
 
-    override fun onFriendListCreated(lc: Core?, list: FriendList?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override var listener: ILinSipListener? = null
 
-    override fun onSubscriptionStateChanged(lc: Core?, lev: Event?, state: SubscriptionState?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onSubscriptionStateChanged(lc: Core, lev: Event, state: SubscriptionState) {
+        Timber.i("subscription state changed to $state event name is ${lev.name}")
     }
 
     override fun onCallLogUpdated(lc: Core?, newcl: CallLog?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // do nothing
     }
 
-    override fun onCallStateChanged(lc: Core?, call: Call?, cstate: Call.State?, message: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+        Timber.i("call state [$cstate]")
     }
 
     override fun onAuthenticationRequested(lc: Core?, authInfo: AuthInfo?, method: AuthMethod?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onNotifyPresenceReceivedForUriOrTel(lc: Core?, lf: Friend?, uriOrTel: String?, presenceModel: PresenceModel?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onChatRoomStateChanged(lc: Core?, cr: ChatRoom?, state: ChatRoom.State?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onBuddyInfoUpdated(lc: Core?, lf: Friend?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("authentication requested")
     }
 
     override fun onNetworkReachable(lc: Core?, reachable: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onNotifyReceived(lc: Core?, lev: Event?, notifiedEvent: String?, body: Content?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onNewSubscriptionRequested(lc: Core?, lf: Friend?, url: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState?, message: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onNotifyPresenceReceived(lc: Core?, lf: Friend?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onEcCalibrationAudioInit(lc: Core?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onMessageReceived(lc: Core?, room: ChatRoom?, message: ChatMessage?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onEcCalibrationResult(lc: Core?, status: EcCalibratorStatus?, delayMs: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onNetworkReachable $reachable")
     }
 
     override fun onSubscribeReceived(lc: Core?, lev: Event?, subscribeEvent: String?, body: Content?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onSubscribeReceived: $subscribeEvent")
     }
 
-    override fun onInfoReceived(lc: Core?, call: Call?, msg: InfoMessage?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState, message: String?) {
+        Timber.i("registration state changed [$cstate]")
     }
 
-    override fun onCallStatsUpdated(lc: Core?, call: Call?, stats: CallStats?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onEcCalibrationAudioInit(lc: Core?) {
+        Timber.i("EC calibration init")
     }
 
-    override fun onFriendListRemoved(lc: Core?, list: FriendList?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onEcCalibrationResult(lc: Core?, status: EcCalibratorStatus, delayMs: Int) {
+        Timber.i("EC calibration ended status=$status delay=$delayMs")
     }
 
-    override fun onReferReceived(lc: Core?, referTo: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onInfoReceived(lc: Core?, call: Call, msg: InfoMessage) {
+        Timber.i("info message received: $msg")
     }
 
-    override fun onQrcodeFound(lc: Core?, result: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onCallStatsUpdated(lc: Core?, call: Call?, stats: CallStats) {
+        Timber.v("onCallStatsUpdated: call stats updated")
+        Timber.v("onCallStatsUpdated: delay: ${stats.roundTripDelay}")
+        Timber.v("onCallStatsUpdated: upload: ${stats.uploadBandwidth}")
+        Timber.v("onCallStatsUpdated: download ${stats.downloadBandwidth}")
     }
 
     override fun onConfiguringStatus(lc: Core?, status: ConfiguringState?, message: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onCallCreated(lc: Core?, call: Call?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onCallCreated: ")
     }
 
-    override fun onPublishStateChanged(lc: Core?, lev: Event?, state: PublishState?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onPublishStateChanged(lc: Core?, lev: Event, state: PublishState) {
+        Timber.i("onPublishStateChanged: publish state changed to $state for event name ${lev.name}")
     }
 
     override fun onCallEncryptionChanged(lc: Core?, call: Call?, on: Boolean, authenticationToken: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onIsComposingReceived(lc: Core?, room: ChatRoom?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onMessageReceivedUnableDecrypt(lc: Core?, room: ChatRoom?, message: ChatMessage?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onCallEncryptionChanged: enabled=$on, token: $authenticationToken")
     }
 
     override fun onLogCollectionUploadProgressIndication(lc: Core?, offset: Int, total: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onVersionUpdateCheckResultReceived(lc: Core?, result: VersionUpdateCheckResult?, version: String?, url: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onEcCalibrationAudioUninit(lc: Core?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onEcCalibrationAudioUninit: ")
     }
 
-    override fun onGlobalStateChanged(lc: Core?, gstate: GlobalState?, message: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onGlobalStateChanged(lc: Core?, gstate: GlobalState, message: String?) {
+        Timber.i("onGlobalStateChanged: $gstate")
     }
 
     override fun onLogCollectionUploadStateChanged(lc: Core?, state: Core.LogCollectionUploadState?, info: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onDtmfReceived(lc: Core?, call: Call?, dtmf: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Timber.i("onDtmfReceived: $dtmf")
     }
 
 }

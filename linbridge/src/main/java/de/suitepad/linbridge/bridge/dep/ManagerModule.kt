@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import de.suitepad.linbridge.bridge.manager.BridgeLinphoneCoreListener
+import de.suitepad.linbridge.bridge.manager.IBridgeLinphoneCoreListener
 import de.suitepad.linbridge.bridge.manager.IManager
 import de.suitepad.linbridge.bridge.manager.LinphoneManager
 import org.linphone.core.*
@@ -26,6 +27,11 @@ class ManagerModule(val debug: Boolean) {
         return factory.createCore(null, null, context).apply {
             addListener(linphoneCoreListener)
         }
+    }
+
+    @Provides
+    fun bridgeLinphoneCoreListener(coreListener: CoreListener): IBridgeLinphoneCoreListener {
+        return coreListener as IBridgeLinphoneCoreListener
     }
 
     @Provides
