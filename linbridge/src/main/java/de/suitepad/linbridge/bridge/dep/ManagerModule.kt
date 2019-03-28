@@ -7,15 +7,17 @@ import de.suitepad.linbridge.bridge.manager.BridgeLinphoneCoreListener
 import de.suitepad.linbridge.bridge.manager.IBridgeLinphoneCoreListener
 import de.suitepad.linbridge.bridge.manager.IManager
 import de.suitepad.linbridge.bridge.manager.LinphoneManager
-import org.linphone.core.*
+import org.linphone.core.Core
+import org.linphone.core.CoreListener
+import org.linphone.core.Factory
 import javax.inject.Named
 
 @Module(includes = [BridgeModule::class])
 class ManagerModule(val debug: Boolean) {
 
     @Provides
-    fun linphoneManager(core: Core): IManager {
-        return LinphoneManager(core)
+    fun linphoneManager(core: Core, coreFactory: Factory): IManager {
+        return LinphoneManager(core, coreFactory)
     }
 
     @Provides
