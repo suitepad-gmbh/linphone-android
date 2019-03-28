@@ -11,6 +11,7 @@ import de.suitepad.linbridge.bridge.dep.BridgeModule
 import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.DaggerBridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.ManagerModule
+import de.suitepad.linbridge.bridge.manager.IBridgeLinphoneCoreListener
 import de.suitepad.linbridge.bridge.manager.IManager
 import timber.log.Timber
 import java.lang.NullPointerException
@@ -42,7 +43,8 @@ class BridgeService : Service(), IBridgeService {
     @Inject
     lateinit var linphoneManager: IManager
 
-    var sipListener: ILinSipListener? = null
+    @Inject
+    lateinit var linphoneCoreListener: IBridgeLinphoneCoreListener
 
     override fun onCreate() {
         super.onCreate()
@@ -111,7 +113,7 @@ class BridgeService : Service(), IBridgeService {
         if (listener == null)
             throw NullPointerException("passed a null listener")
 
-        sipListener = listener
+        linphoneCoreListener.listener = listener
     }
 
     override fun registerSipListener(listener: ILinSipListener?): Boolean {
@@ -119,11 +121,11 @@ class BridgeService : Service(), IBridgeService {
             throw NullPointerException("passed a null listener")
         }
 
-        if (sipListener != null) {
+        if (linphoneCoreListener.listener != null) {
             return false
         }
 
-        sipListener = listener
+        linphoneCoreListener.listener = listener
         return true
     }
 
