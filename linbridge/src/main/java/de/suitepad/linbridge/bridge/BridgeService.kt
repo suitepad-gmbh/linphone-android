@@ -79,11 +79,6 @@ class BridgeService : Service(), IBridgeService {
         linphoneManager.start()
     }
 
-    fun stopService() {
-        linphoneManager.destroy()
-        stopSelf()
-    }
-
     override fun authenticate(host: String?, port: Int, username: String?, password: String?, proxy: String?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -102,6 +97,11 @@ class BridgeService : Service(), IBridgeService {
 
     override fun registerSipListener(listener: ILinSipListener?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun stopService() {
+        linphoneManager.destroy()
+        stopSelf()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
