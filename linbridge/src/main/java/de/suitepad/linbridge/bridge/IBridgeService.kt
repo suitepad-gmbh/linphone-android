@@ -1,23 +1,15 @@
 package de.suitepad.linbridge.bridge
 
-import android.os.Bundle
-import android.os.Messenger
+import android.os.IBinder
+import de.suitepad.linbridge.api.ILinbridge
 
-interface IBridgeService {
+interface IBridgeService : ILinbridge {
 
-    /**
-     * authenticate and connect to the SIP  server
-     */
-    fun authenticate(payload: Bundle)
+    val binder: ILinBridgeBinder
+    override fun asBinder(): IBinder = binder.asBinder()
 
-    /**
-     * configure SIP server
-     */
-    fun configure(payload: Bundle)
-
-    /**
-     * register a callback messenger
-     */
-    fun registerCallback(callback: Messenger)
+    class ILinBridgeBinder(private val impl: ILinbridge) : ILinbridge.Stub(), ILinbridge by impl {
+        override fun asBinder(): IBinder = super.asBinder()
+    }
 
 }

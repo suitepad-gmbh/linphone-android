@@ -4,6 +4,8 @@ import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.os.*
+import de.suitepad.linbridge.api.ILinSipListener
+import de.suitepad.linbridge.api.SIPConfiguration
 import de.suitepad.linbridge.app.BridgeApplication
 import de.suitepad.linbridge.bridge.dep.BridgeModule
 import de.suitepad.linbridge.bridge.dep.BridgeServiceComponent
@@ -11,7 +13,6 @@ import de.suitepad.linbridge.bridge.dep.DaggerBridgeServiceComponent
 import de.suitepad.linbridge.bridge.dep.ManagerModule
 import de.suitepad.linbridge.bridge.exception.MissingParameterException
 import de.suitepad.linbridge.bridge.manager.IManager
-import de.suitepad.linbridge.bridge.manager.configuration.SIPConfiguration
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,9 +41,6 @@ class BridgeService : Service(), IBridgeService {
 
     @Inject
     lateinit var linphoneManager: IManager
-
-    var messengerHandler: Messenger? = null
-    var callbackMessenger: Messenger? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -77,42 +75,6 @@ class BridgeService : Service(), IBridgeService {
         return result
     }
 
-    override fun authenticate(payload: Bundle) {
-        val sipServer = payload.getString(EXTRA_SIP_SERVER)
-        val sipUsername = payload.getString(EXTRA_SIP_USERNAME)
-        val sipPassword = payload.getString(EXTRA_SIP_PASSWORD)
-        val sipPort = payload.getInt(EXTRA_SIP_PORT)
-        val sipProxy = payload.getString(EXTRA_SIP_PROXY)
-
-        if (sipServer == null) {
-            throw MissingParameterException(EXTRA_SIP_SERVER)
-        }
-
-        if (sipUsername == null) {
-            throw MissingParameterException(EXTRA_SIP_USERNAME)
-        }
-
-        if (sipPassword == null) {
-            throw MissingParameterException(EXTRA_SIP_PASSWORD)
-        }
-
-        linphoneManager.authenticate(sipServer, sipPort, sipUsername, sipPassword, sipProxy)
-    }
-
-    override fun configure(payload: Bundle) {
-        linphoneManager.configure(SIPConfiguration().apply {
-            microphoneGain = payload.getInt(EXTRA_MICROPHONE_GAIN)
-            speakerGain = payload.getInt(EXTRA_SPEAKER_GAIN)
-            echoCancellation = payload.getBoolean(EXTRA_AEC_ENABLED)
-            echoLimiter = payload.getBoolean(EXTRA_EL_ENABLED)
-            microphoneDecrease = payload.getInt(EXTRA_EL_MIC_REDUCTION)
-            speakerThreshold = payload.getFloat(EXTRA_EL_SPEAKER_THRESHOLD)
-            doubleTalkDetection = payload.getFloat(EXTRA_EL_DOUBLETALK_THRESHOLD)
-            echoLimiterSustain = payload.getInt(EXTRA_EL_SUSTAIN)
-            enabledCodecs = payload.getStringArray(EXTRA_LIST_CODEC_ENABLED)?.toList()
-        })
-    }
-
     fun startService() {
         linphoneManager.start()
     }
@@ -122,18 +84,38 @@ class BridgeService : Service(), IBridgeService {
         stopSelf()
     }
 
-    override fun registerCallback(callback: Messenger) {
-        if (callbackMessenger != null) {
-            TODO("handle this case and throw an error")
-        }
-        callbackMessenger = callback
+    override fun authenticate(host: String?, port: Int, username: String?, password: String?, proxy: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        if (messengerHandler == null) {
-            messengerHandler = Messenger(MessengerHandler(this))
-        }
-        return messengerHandler!!.binder
+    override fun updateConfig(configuration: SIPConfiguration?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun getConfig(): SIPConfiguration {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun forceRegisterSipListener(listener: ILinSipListener?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun registerSipListener(listener: ILinSipListener?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return binder
+    }
+
+    private var _binder: IBridgeService.ILinBridgeBinder? = null
+    override val binder: IBridgeService.ILinBridgeBinder
+        get() {
+            if (_binder == null) {
+                _binder = IBridgeService.ILinBridgeBinder(this)
+            }
+            return _binder!!
+        }
+
 
 }

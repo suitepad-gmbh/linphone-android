@@ -1,6 +1,7 @@
 package de.suitepad.linbridge.bridge.manager
 
-import de.suitepad.linbridge.bridge.manager.configuration.SIPConfiguration
+import de.suitepad.linbridge.api.SIPConfiguration
+
 
 interface IManager {
 
