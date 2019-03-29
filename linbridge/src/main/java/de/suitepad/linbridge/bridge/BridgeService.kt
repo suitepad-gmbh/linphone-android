@@ -17,26 +17,29 @@ import timber.log.Timber
 import java.lang.NullPointerException
 import javax.inject.Inject
 
-const val ACTION_START_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_START_SERVICE"
-const val ACTION_STOP_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_STOP_SERVICE"
-
-const val EXTRA_SIP_SERVER = "EXTRA_SIP_SERVER"
-const val EXTRA_SIP_USERNAME = "EXTRA_SIP_USERNAME"
-const val EXTRA_SIP_PASSWORD = "EXTRA_SIP_PASSWORD"
-const val EXTRA_SIP_PORT = "EXTRA_SIP_PASSWORD"
-const val EXTRA_SIP_PROXY = "EXTRA_SIP_PROXY"
-
-const val EXTRA_MICROPHONE_GAIN = "EXTRA_MICROPHONE_GAIN"
-const val EXTRA_SPEAKER_GAIN = "EXTRA_SPEAKER_GAIN"
-const val EXTRA_AEC_ENABLED = "EXTRA_AEC_ENABLED"
-const val EXTRA_EL_ENABLED = "EXTRA_EL_ENABLED"
-const val EXTRA_EL_MIC_REDUCTION = "EXTRA_EL_MICROPHONE_REDUCTION"
-const val EXTRA_EL_SPEAKER_THRESHOLD = "EXTRA_EL_SPEAKER_THRESHOLD"
-const val EXTRA_EL_SUSTAIN = "EXTRA_EL_SUSTAIN"
-const val EXTRA_EL_DOUBLETALK_THRESHOLD = "EXTRA_EL_DOUBLETALK_THRESHOLD"
-const val EXTRA_LIST_CODEC_ENABLED = "EXTRA_LIST_CODEC_ENABLED"
-
 class BridgeService : Service(), IBridgeService {
+
+    companion object {
+        const val ACTION_START_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_START_SERVICE"
+        const val ACTION_STOP_SERVICE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_STOP_SERVICE"
+        const val ACTION_AUTHENTICATE = "de.suitepad.linbridge.bridge.BridgeService.ACTION_AUTHENTICATE"
+
+        const val EXTRA_SIP_SERVER = "SERVER"
+        const val EXTRA_SIP_USERNAME = "USERNAME"
+        const val EXTRA_SIP_PASSWORD = "PASSWORD"
+        const val EXTRA_SIP_PORT = "PORT"
+        const val EXTRA_SIP_PROXY = "PROXY"
+
+        const val EXTRA_MICROPHONE_GAIN = "MICROPHONE_GAIN"
+        const val EXTRA_SPEAKER_GAIN = "SPEAKER_GAIN"
+        const val EXTRA_AEC_ENABLED = "AEC_ENABLED"
+        const val EXTRA_EL_ENABLED = "EL_ENABLED"
+        const val EXTRA_EL_MIC_REDUCTION = "EL_MICROPHONE_REDUCTION"
+        const val EXTRA_EL_SPEAKER_THRESHOLD = "EL_SPEAKER_THRESHOLD"
+        const val EXTRA_EL_SUSTAIN = "EL_SUSTAIN"
+        const val EXTRA_EL_DOUBLETALK_THRESHOLD = "EL_DOUBLETALK_THRESHOLD"
+        const val EXTRA_LIST_CODEC_ENABLED = "CODECS"
+    }
 
     lateinit var component: BridgeServiceComponent
 
@@ -64,23 +67,27 @@ class BridgeService : Service(), IBridgeService {
         var result = super.onStartCommand(intent, flags, startId)
         intent?.let {
             when (it.action) {
-                ACTION_START_SERVICE -> {
-                    startService()
-                }
                 ACTION_STOP_SERVICE -> {
                     Timber.d("stopping service ${Integer.toHexString(hashCode())}")
                     stopService()
                 }
-                else -> {
-                    // do nothing
+                ACTION_AUTHENTICATE -> {
+                    authenticate(
+                            it.getStringExtra(EXTRA_SIP_SERVER),
+                            it.getIntExtra(EXTRA_SIP_PORT, 5060),
+                            it.getStringExtra(EXTRA_SIP_USERNAME),
+                            it.getStringExtra(EXTRA_SIP_PASSWORD),
+                            it.getStringExtra(EXTRA_SIP_PROXY)
+                    )
                 }
             }
         }
         return result
     }
 
-    fun startService() {
-        linphoneManager.start()
+    override fun onDestroy() {
+        linphoneManager.destroy()
+        super.onDestroy()
     }
 
     override fun authenticate(host: String?, port: Int, username: String?, password: String?, proxy: String?) {
@@ -130,7 +137,6 @@ class BridgeService : Service(), IBridgeService {
     }
 
     override fun stopService() {
-        linphoneManager.destroy()
         stopSelf()
     }
 
