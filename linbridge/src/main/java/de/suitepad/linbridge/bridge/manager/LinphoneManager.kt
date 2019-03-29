@@ -13,14 +13,17 @@ class LinphoneManager(val core: Core, val coreFactory: Factory) : IManager {
             core.iterate()
         }
     }
-    val keepAliveTimer = Timer("Linphone scheduler")
+    var keepAliveTimer: Timer? = null
 
     override fun start() {
-        keepAliveTimer.schedule(keepAliveTask, 0, 20)
+        if (keepAliveTimer == null) {
+            keepAliveTimer = Timer("Linphone scheduler")
+            keepAliveTimer!!.schedule(keepAliveTask, 0, 20)
+        }
     }
 
     override fun destroy() {
-        keepAliveTimer.cancel()
+        keepAliveTimer?.cancel()
     }
 
     override fun configure(settings: SIPConfiguration?) {
