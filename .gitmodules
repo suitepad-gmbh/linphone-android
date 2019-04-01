@@ -120,3 +120,9 @@
 [submodule "submodules/externals/zxing-cpp"]
 	path = submodules/externals/zxing-cpp
 	url = https://gitlab.linphone.org/BC/public/external/zxing-cpp.git
+[submodule "linbridge"]
+	path = linbridge
+	url = git@github.com:suitepad-gmbh/linbridge.git
+[submodule "linbridge-api"]
+	path = linbridge-api
+	url = git@github.com:suitepad-gmbh/linbridge-api.git
