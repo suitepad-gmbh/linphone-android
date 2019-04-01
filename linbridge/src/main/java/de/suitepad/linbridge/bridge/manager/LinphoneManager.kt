@@ -81,7 +81,7 @@ class LinphoneManager(val context: Context, val core: Core, val coreFactory: Fac
         val proxyConfig = core.createProxyConfig()
         var sipProxy = "sip:"
         if (proxy == null) {
-            sipProxy = sipAddress
+            sipProxy += host
         } else {
             if (!proxy.startsWith("sip:") && !proxy.startsWith("<sip:") &&
                     !proxy.startsWith("sips:") && !proxy.startsWith("<sips:")) {
@@ -93,11 +93,15 @@ class LinphoneManager(val context: Context, val core: Core, val coreFactory: Fac
         val proxyAddress: Address = coreFactory.createAddress(sipProxy)
         proxyConfig.enableRegister(true)
         proxyConfig.serverAddr = proxyAddress.asStringUriOnly()
-        proxyConfig.identityAddress = proxyAddress
-        proxyConfig.identityAddress.password = password
+        proxyConfig.identityAddress = address
         proxyConfig.route = null
+        proxyConfig.avpfMode = AVPFMode.Enabled
+        proxyConfig.avpfRrInterval = 0
+        proxyConfig.enableQualityReporting(false)
+        proxyConfig.qualityReportingCollector = null
+        proxyConfig.qualityReportingInterval = 0
+
         core.addProxyConfig(proxyConfig)
-        proxyConfig.done()
         core.defaultProxyConfig = proxyConfig
         core.refreshRegisters()
 
