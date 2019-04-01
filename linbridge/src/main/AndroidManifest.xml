@@ -32,6 +32,7 @@
             <intent-filter>
                 <action android:name="de.suitepad.linbridge.bridge.BridgeService.ACTION_START_SERVICE"/>
                 <action android:name="de.suitepad.linbridge.bridge.BridgeService.ACTION_STOP_SERVICE"/>
+                <action android:name="de.suitepad.linbridge.bridge.BridgeService.ACTION_AUTHENTICATE"/>
             </intent-filter>
 
         </service>

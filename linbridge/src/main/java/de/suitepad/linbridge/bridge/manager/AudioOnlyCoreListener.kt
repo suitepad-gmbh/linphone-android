@@ -1,6 +1,7 @@
 package de.suitepad.linbridge.bridge.manager
 
 import org.linphone.core.*
+import timber.log.Timber
 
 /**
  * This class is meant to reduce the amount of methods to be implemented by a listener that's only
@@ -11,9 +12,11 @@ abstract class AudioOnlyCoreListener : CoreListener {
     }
 
     override fun onFriendListCreated(lc: Core?, list: FriendList?) {
+        Timber.i("onFriendListCreated: ")
     }
 
     override fun onNotifyPresenceReceivedForUriOrTel(lc: Core?, lf: Friend?, uriOrTel: String?, presenceModel: PresenceModel?) {
+        Timber.i("onNotifyPresenceReceivedForUriOrTel: ")
     }
 
     override fun onChatRoomStateChanged(lc: Core?, cr: ChatRoom?, state: ChatRoom.State?) {

@@ -16,8 +16,8 @@ import javax.inject.Named
 class ManagerModule(val debug: Boolean) {
 
     @Provides
-    fun linphoneManager(core: Core, coreFactory: Factory): IManager {
-        return LinphoneManager(core, coreFactory)
+    fun linphoneManager(context: Context, core: Core, coreFactory: Factory): IManager {
+        return LinphoneManager(context, core, coreFactory)
     }
 
     @Provides
@@ -26,7 +26,7 @@ class ManagerModule(val debug: Boolean) {
             factory: Factory,
             context: Context
     ): Core {
-        return factory.createCore(null, null, context).apply {
+        return factory.createCore("${context.filesDir.absolutePath}/linphonerc", "${context.filesDir.absolutePath}/linphonerc", context).apply {
             addListener(linphoneCoreListener)
         }
     }

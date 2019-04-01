@@ -8,15 +8,15 @@ class BridgeLinphoneCoreListener : AudioOnlyCoreListener(), IBridgeLinphoneCoreL
 
     override var listener: ILinSipListener? = null
 
-    override fun onSubscriptionStateChanged(lc: Core, lev: Event, state: SubscriptionState) {
-        Timber.i("subscription state changed to $state event name is ${lev.name}")
+    override fun onSubscriptionStateChanged(lc: Core?, lev: Event?, state: SubscriptionState?) {
+        Timber.i("subscription state changed to $state event name is ${lev?.name}")
     }
 
     override fun onCallLogUpdated(lc: Core?, newcl: CallLog?) {
         // do nothing
     }
 
-    override fun onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+    override fun onCallStateChanged(lc: Core?, call: Call?, cstate: Call.State?, message: String?) {
         Timber.i("call state [$cstate]")
     }
 
@@ -32,8 +32,8 @@ class BridgeLinphoneCoreListener : AudioOnlyCoreListener(), IBridgeLinphoneCoreL
         Timber.i("onSubscribeReceived: $subscribeEvent")
     }
 
-    override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState, message: String?) {
-        Timber.i("registration state changed [$cstate]")
+    override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState?, message: String?) {
+        Timber.i("registration state changed [$cstate] $message")
     }
 
     override fun onEcCalibrationAudioInit(lc: Core?) {
@@ -56,14 +56,16 @@ class BridgeLinphoneCoreListener : AudioOnlyCoreListener(), IBridgeLinphoneCoreL
     }
 
     override fun onConfiguringStatus(lc: Core?, status: ConfiguringState?, message: String?) {
+        Timber.i("onConfiguringStatus: $status $message")
+        lc?.config?.sync()
     }
 
     override fun onCallCreated(lc: Core?, call: Call?) {
         Timber.i("onCallCreated: ")
     }
 
-    override fun onPublishStateChanged(lc: Core?, lev: Event, state: PublishState) {
-        Timber.i("onPublishStateChanged: publish state changed to $state for event name ${lev.name}")
+    override fun onPublishStateChanged(lc: Core?, lev: Event?, state: PublishState?) {
+        Timber.i("onPublishStateChanged: publish state changed to $state for event name ${lev?.name}")
     }
 
     override fun onCallEncryptionChanged(lc: Core?, call: Call?, on: Boolean, authenticationToken: String?) {
@@ -77,8 +79,8 @@ class BridgeLinphoneCoreListener : AudioOnlyCoreListener(), IBridgeLinphoneCoreL
         Timber.i("onEcCalibrationAudioUninit: ")
     }
 
-    override fun onGlobalStateChanged(lc: Core?, gstate: GlobalState, message: String?) {
-        Timber.i("onGlobalStateChanged: $gstate")
+    override fun onGlobalStateChanged(lc: Core?, gstate: GlobalState?, message: String?) {
+        Timber.i("onGlobalStateChanged: $gstate $message")
     }
 
     override fun onLogCollectionUploadStateChanged(lc: Core?, state: Core.LogCollectionUploadState?, info: String?) {
