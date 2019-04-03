@@ -51,3 +51,4 @@ google-services.json
 linphone.iml
 src/linphone-wrapper
 liblinphone_tester/res/raw/
+**.iml
