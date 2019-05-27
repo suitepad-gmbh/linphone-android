@@ -1,3 +1,1 @@
-include ':linbridge'
 include 'liblinphone-sdk'
-include ':linbridge-api'
