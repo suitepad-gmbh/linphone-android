@@ -58,3 +58,4 @@ liblinphone_tester/res/raw/
 liblinphone-sdk/res/
 **/.vscode
 res/value-hi_IN
+/repositories.properties

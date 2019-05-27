@@ -1,4 +1,5 @@
 // Project information
+apply plugin: 'maven-publish'
 buildDir = 'bin'
 buildscript {
     repositories {
@@ -6,9 +7,12 @@ buildscript {
         mavenCentral()
         mavenLocal()
         google()
+        maven { url 'https://suitepad.mycloudrepo.io/public/repositories/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'digital.wup:android-maven-publish:3.6.2'
+        classpath 'de.suitepad:gradletools:1.2.0-SNAPSHOT'
     }
 }
 
@@ -26,11 +30,9 @@ configurations {
     javadocDeps
 }
 
-
-
-
 apply plugin: 'com.android.library'
-
+apply plugin: 'digital.wup.android-maven-publish'
+apply plugin: 'suitepad-gradletools-repos'
 
 dependencies {
     implementation 'org.apache.commons:commons-compress:1.16.1'
@@ -183,3 +185,19 @@ task copyAssets(type: Sync) {
 
 }
 project.tasks['preBuild'].dependsOn 'copyAssets'
+
+publishing {
+    repositories {
+        mavenRemote {
+            load 'public'
+        }
+    }
+    publications {
+        mavenAar(MavenPublication) {
+            groupId "de.suitepad"
+            artifactId "linphone-sdk"
+            version "1.0.0-SNAPSHOT"
+            artifact("$buildDir/outputs/aar/liblinphone-sdk-release.aar")
+        }
+    }
+}
